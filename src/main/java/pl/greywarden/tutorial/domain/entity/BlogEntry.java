@@ -22,5 +22,5 @@ public class BlogEntry {
     private Author author;
     @Column(length = Integer.MAX_VALUE)
     private String content;
-    private LocalDateTime publicationDate;
+    private LocalDateTime publicationDate = LocalDateTime.now();
 }
