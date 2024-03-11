@@ -5,7 +5,10 @@ spring:
     password: password
     driver-class-name: org.h2.Driver
   jpa:
-    open-in-view: true
+    open-in-view: false
 server:
   servlet:
     context-path: /api
+springdoc:
+  swagger-ui:
+    url: /api.yml

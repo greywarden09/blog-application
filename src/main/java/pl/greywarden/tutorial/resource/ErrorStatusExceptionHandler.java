@@ -15,6 +15,6 @@ class ErrorStatusExceptionHandler {
     ErrorMessage handleException(AuthorNotFoundException exception) {
         var message = exception.getReason();
 
-        return new ErrorMessage(404, message);
+        return new ErrorMessage(exception.getStatusCode().value(), message);
     }
 }

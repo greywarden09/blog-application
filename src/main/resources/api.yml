@@ -1,0 +1,273 @@
+openapi: 3.0.3
+info:
+  title: Blog application
+  description: Training application implementing simple blog application
+  version: 1.0-SNAPSHOT
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local server
+
+paths:
+  /authors:
+    get:
+      summary: Retrieve paginated list of authors
+      tags:
+        - AuthorsResource
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: Page with authors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorPage'
+        '400':
+          description: 400 BAD REQUEST if `sort` parameter is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: No property 'string' found for type 'Author'
+    post:
+      summary: Create new author
+      tags:
+        - AuthorsResource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+      responses:
+        '201':
+          description: 201 CREATED status code and `Location` header
+          headers:
+            Location:
+              description: Link to newly created author
+              schema:
+                type: string
+                example: /api/authors/1
+        '400':
+          description: 400 BAD REQUEST if name is null, empty or blank
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: Author's name must not be blank
+  /authors/{id}:
+    get:
+      summary: Retrieve author by ID
+      tags:
+        - AuthorsResource
+      parameters:
+        - in: path
+          description: Author's ID
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Author with ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: 404 NOT found if author with specified ID does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 404
+                message: Author with id 42 not found
+    delete:
+      summary: Delete author by ID
+      tags:
+        - AuthorsResource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No content is returned
+    patch:
+      summary: Update author by ID
+      tags:
+        - AuthorsResource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthorRequest'
+      responses:
+        '202':
+          description: 202 ACCEPTED on successful update
+        '404':
+          description: 404 NOT FOUND is returned if author with specified ID does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 404
+                message: Author with id 42 not found
+
+components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: >
+        0 based index of page [0..N] <br/>
+        Negative value will be replaced with default 0.
+      schema:
+        type: integer
+    size:
+      name: size
+      description: >
+        Size of returned page (default - 20) <br/>
+        Negative value or 0 will be replaced with default 20.
+      in: query
+      schema:
+        type: integer
+    sort:
+      name: sort
+      in: query
+      description: >
+        Sorting criteria - default order is ascending.
+        Syntax: `field,(asc|desc)`.
+        Direction is optional. Note that there's no space before and after `,`.
+      schema:
+        type: array
+        items:
+          type: string
+  schemas:
+    Page:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+        pageable:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+            pageSize:
+              type: integer
+            sort:
+              type: object
+              properties:
+                empty:
+                  type: boolean
+                sorted:
+                  type: boolean
+                unsorted:
+                  type: boolean
+            offset:
+              type: integer
+            unpaged:
+              type: boolean
+            paged:
+              type: boolean
+        last:
+          type: boolean
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
+        first:
+          type: boolean
+        numberOfElements:
+          type: integer
+        empty:
+          type: boolean
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Author's id
+        name:
+          type: string
+          description: Author's name
+        blogEntries:
+          type: array
+          description: Author's blog entries listed as URIs
+          items:
+            type: string
+          example:
+            - /api/blog-entries/1
+            - /api/blog-entries/2
+    AuthorPage:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Author'
+    ErrorMessage:
+      description: Generic error message
+      type: object
+      properties:
+        statusCode:
+          description: HTTP status code
+          type: integer
+        message:
+          description: Message with error details
+          type: string
+    UpdateAuthorRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+          pattern: ^(?!\s*$).+
+          description: Cannot be empty nor blank
+          example: John Doe
+    CreateAuthorRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+          pattern: ^(?!\s*$).+
+          description: Cannot be empty nor blank
+          example: John Doe

@@ -1,7 +1,6 @@
 package pl.greywarden.tutorial.resource;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 class ValidationErrorHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ErrorMessage handleException(BindingResult bindingResult) {
+    ErrorMessage handleMethodArgumentNotValidException(BindingResult bindingResult) {
         var message = bindingResult
                 .getFieldErrors()
                 .stream()
@@ -27,13 +26,9 @@ class ValidationErrorHandler {
         return new ErrorMessage(400, message);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(PropertyReferenceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ErrorMessage handleConstraintViolationException(ConstraintViolationException exception) {
-        var message = exception.getConstraintViolations()
-                .stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(", "));
-        return new ErrorMessage(400, message);
+    ErrorMessage handlePropertyReferenceException(PropertyReferenceException exception) {
+        return new ErrorMessage(400, exception.getMessage());
     }
 }
