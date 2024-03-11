@@ -7,6 +7,7 @@ import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.instancio.Select;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import pl.greywarden.tutorial.domain.entity.Author;
 import pl.greywarden.tutorial.domain.entity.BlogEntry;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+@Profile("dev")
 @Component
 @RequiredArgsConstructor
 class DevDataInitializer implements InitializingBean {

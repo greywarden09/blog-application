@@ -1,13 +1,25 @@
 openapi: 3.0.3
 info:
   title: Blog application
-  description: Training application implementing simple blog application
+  description: >
+    Training application implementing simple blog application
+    <br/>
+    <br/>
+    See also: <ul>
+      <li><a href="https://swagger.io/specification/" target=”_blank”>OpenAPI specification</a></li>
+      <li><a href="https://www.baeldung.com/spring-data-jpa-pagination-sorting" target=”_blank”>Spring pagination and sorting</a></li>
+      <li><a href="https://editor.swagger.io/" target=”_blank”>Swagger Editor</a></li>
+    </ul>
   version: 1.0-SNAPSHOT
 
 servers:
   - url: http://localhost:8080/api
     description: Local server
-
+tags:
+  - name: AuthorsResource
+    description: Authors resource
+  - name: BlogEntriesResource
+    description: Blog entries resource
 paths:
   /authors:
     get:
@@ -122,6 +134,15 @@ paths:
       responses:
         '202':
           description: 202 ACCEPTED on successful update
+        '400':
+          description: 400 BAD REQUEST if name is null, empty or blank
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: Author's name must not be blank
         '404':
           description: 404 NOT FOUND is returned if author with specified ID does not exist
           content:
@@ -131,6 +152,125 @@ paths:
               example:
                 statusCode: 404
                 message: Author with id 42 not found
+  /blog-entries:
+    get:
+      summary: Retrieve paginated list of blog entries
+      tags:
+        - BlogEntriesResource
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: Page with blog entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogEntriesPage'
+        '400':
+          description: 400 BAD REQUEST if `sort` parameter is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: No property 'string' found for type 'BlogEntry'
+    post:
+      summary: Create blog entry
+      tags:
+        - BlogEntriesResource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBlogEntryRequest'
+      responses:
+        '201':
+          description: 201 CREATED status code and `Location` header
+          headers:
+            Location:
+              description: Link to newly created blog entry
+              schema:
+                type: string
+                example: /api/blog-entries/1
+        '400':
+          description: 400 BAD REQUEST if author with specified ID was not found or content is empty, null or blank
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: Blog entry must not be empty
+  /blog-entries/{id}:
+    get:
+      summary: Retrieve blog entry by ID
+      tags:
+        - BlogEntriesResource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Blog entry with ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogEntry'
+        '404':
+          description: 404 NOT FOUND is returned if blog entry with specified ID does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 404
+                message: Blog entry with id 42 not found
+    delete:
+      summary: Delete blog entry by ID
+      tags:
+        - BlogEntriesResource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No content is returned
+    patch:
+      summary: Update blog entry by ID
+      tags:
+        - BlogEntriesResource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlogEntryRequest'
+      responses:
+        '202':
+          description: 202 ACCEPTED on successful update
+        '400':
+          description: 400 BAD REQUEST if content is empty, null or blank
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                statusCode: 400
+                message: Blog entry must not be empty
 
 components:
   parameters:
@@ -233,6 +373,21 @@ components:
           example:
             - /api/blog-entries/1
             - /api/blog-entries/2
+    BlogEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        author:
+          type: string
+          example: John Doe
+        content:
+          type: string
+          example: Lorem ipsum dolor sit amet
+        publicationDate:
+          type: string
+          example: 20/01/2019 13:57
     AuthorPage:
       type: object
       allOf:
@@ -243,6 +398,16 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Author'
+    BlogEntriesPage:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/BlogEntry'
     ErrorMessage:
       description: Generic error message
       type: object
@@ -271,3 +436,21 @@ components:
           pattern: ^(?!\s*$).+
           description: Cannot be empty nor blank
           example: John Doe
+    CreateBlogEntryRequest:
+      type: object
+      properties:
+        authorId:
+          type: integer
+          required: true
+          example: 42
+        content:
+          type: string
+          required: true
+          example: Lorem ipsum dolor sit amet
+    UpdateBlogEntryRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          required: true
+          example: Lorem ipsum dolor sit amet

@@ -1,14 +1,17 @@
 package pl.greywarden.tutorial.service;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import pl.greywarden.tutorial.domain.dto.BlogEntryResponse;
 import pl.greywarden.tutorial.domain.dto.CreateBlogEntryRequest;
+import pl.greywarden.tutorial.domain.dto.UpdateBlogEntryRequest;
 import pl.greywarden.tutorial.domain.entity.BlogEntry;
+import pl.greywarden.tutorial.domain.exception.BlogEntryNotFoundException;
 import pl.greywarden.tutorial.repository.AuthorsRepository;
 import pl.greywarden.tutorial.repository.BlogEntriesRepository;
 
@@ -22,15 +25,12 @@ public class BlogEntriesService {
     private final HttpServletResponse servletResponse;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public Page<BlogEntryResponse> getAllBlogEntries(int pageNumber, int pageSize) {
-        var pageRequest = PageRequest.of(pageNumber, pageSize);
-
-        return blogEntriesRepository.findAll(pageRequest)
+    public Page<BlogEntryResponse> getAllBlogEntries(Pageable pageable) {
+        return blogEntriesRepository.findAll(pageable)
                 .map(this::convertToResponse);
     }
 
     private BlogEntryResponse convertToResponse(BlogEntry blogEntry) {
-
         var entryId = blogEntry.getId();
         var author = blogEntry.getAuthor().getName();
         var content = blogEntry.getContent();
@@ -59,7 +59,8 @@ public class BlogEntriesService {
     }
 
     public BlogEntryResponse getBlogEntryById(Integer blogEntryId) {
-        var blogEntry = blogEntriesRepository.getReferenceById(blogEntryId);
+        var blogEntry = blogEntriesRepository.findById(blogEntryId)
+                .orElseThrow(() -> new BlogEntryNotFoundException(blogEntryId));
 
         var entryId = blogEntry.getId();
         var author = blogEntry.getAuthor().getName();
@@ -67,5 +68,13 @@ public class BlogEntriesService {
         var publicationDate = formatter.format(blogEntry.getPublicationDate());
 
         return new BlogEntryResponse(entryId, author, content, publicationDate);
+    }
+
+    @Transactional
+    public void updateBlogEntry(Integer blogEntryId, UpdateBlogEntryRequest updateBlogEntryRequest) {
+        var blogEntry = blogEntriesRepository.findById(blogEntryId)
+                .orElseThrow(() -> new BlogEntryNotFoundException(blogEntryId));
+
+        blogEntry.setContent(updateBlogEntryRequest.content());
     }
 }

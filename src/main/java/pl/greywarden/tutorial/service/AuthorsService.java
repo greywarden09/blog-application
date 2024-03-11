@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.LogFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -13,11 +12,8 @@ import pl.greywarden.tutorial.domain.dto.AuthorResponse;
 import pl.greywarden.tutorial.domain.dto.CreateAuthorRequest;
 import pl.greywarden.tutorial.domain.dto.UpdateAuthorRequest;
 import pl.greywarden.tutorial.domain.entity.Author;
-import pl.greywarden.tutorial.domain.exceptions.AuthorNotFoundException;
+import pl.greywarden.tutorial.domain.exception.AuthorNotFoundException;
 import pl.greywarden.tutorial.repository.AuthorsRepository;
-
-import java.util.List;
-import java.util.logging.Logger;
 
 @Slf4j
 @Service

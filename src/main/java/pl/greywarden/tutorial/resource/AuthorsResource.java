@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.greywarden.tutorial.domain.dto.AuthorResponse;
 import pl.greywarden.tutorial.domain.dto.CreateAuthorRequest;
 import pl.greywarden.tutorial.domain.dto.UpdateAuthorRequest;
-import pl.greywarden.tutorial.domain.entity.Author;
 import pl.greywarden.tutorial.service.AuthorsService;
 
 @RestController
