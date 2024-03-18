@@ -36,14 +36,14 @@ class DevDataInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         var authors = Instancio.ofList(Author.class)
-                .size(30)
+                .size(10)
                 .supply(Select.field(Author::getName), this::generateAuthorName)
                 .ignore(Select.field(Author::getId))
                 .create();
         authorsRepository.saveAll(authors);
 
         var blogEntries = Instancio.ofList(BlogEntry.class)
-                .size(3000)
+                .size(100)
                 .supply(Select.field(BlogEntry::getContent), this::generateBlogEntryContent)
                 .supply(Select.field(BlogEntry::getAuthor), () -> pickRandomAuthor(authors))
                 .supply(Select.field(BlogEntry::getPublicationDate), this::generatePublicationDate)

@@ -1,15 +1,19 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:blog-application
-    username: sa
-    password: password
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost/blog_application
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
+  liquibase:
+    change-log: db/changelog/master.xml
 server:
   servlet:
     context-path: /api
 
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
+  swagger-ui:
+    url: /api.yml

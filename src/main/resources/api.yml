@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Blog application
   description: >
-    Training application implementing simple blog application
+    Training application implementing simple blog application.
     <br/>
     <br/>
     See also: <ul>
@@ -74,6 +74,29 @@ paths:
               example:
                 statusCode: 400
                 message: Author's name must not be blank
+  /authors/upload:
+    post:
+      summary: Populate authors with CSV file
+      tags:
+        - AuthorsResource
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: ['file']
+              properties:
+                file:
+                  required: true
+                  type: string
+                  format: binary
+                  description: CSV file with authors
+            encoding:
+              file:
+                contentType: text/csv
+      responses:
+        '202':
+          description: No content is returned, the request is handled asynchronously
   /authors/{id}:
     get:
       summary: Retrieve author by ID

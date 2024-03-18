@@ -6,7 +6,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Profile("dev")
 @RestController
 class ApiDoc {
     @Value("classpath:api.yml")

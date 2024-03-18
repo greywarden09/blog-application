@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="Marcin Las">
+        <createTable tableName="AUTHORS">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(4096)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="BLOG_ENTRIES">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_blog_entry_author"
+                             references="AUTHORS(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
