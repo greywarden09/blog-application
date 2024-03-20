@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="1" author="Marcin Las">
-        <createTable tableName="AUTHORS">
+        <createTable tableName="authors">
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -12,7 +12,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <createTable tableName="BLOG_ENTRIES">
+        <createTable tableName="blog_entries">
             <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -23,6 +23,9 @@
                 <constraints nullable="false"
                              foreignKeyName="fk_blog_entry_author"
                              references="AUTHORS(id)"/>
+            </column>
+            <column name="publication_date" type="timestamp">
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>

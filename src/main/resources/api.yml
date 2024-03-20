@@ -91,9 +91,6 @@ paths:
                   type: string
                   format: binary
                   description: CSV file with authors
-            encoding:
-              file:
-                contentType: text/csv
       responses:
         '202':
           description: No content is returned, the request is handled asynchronously

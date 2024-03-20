@@ -12,10 +12,13 @@ services:
     container_name: blog_application_database
     volumes:
       - db-data:/var/lib/postgresql/data
+  application:
+    image: blog-application:1.0-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database/blog_application
+    container_name: blog_application
+
 volumes:
   db-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/home/mlas/tutorial/blog-application'
