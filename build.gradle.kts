@@ -23,6 +23,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.h2database:h2:2.2.224")
+
     implementation("net.datafaker:datafaker:2.1.0")
     implementation("org.instancio:instancio-core:4.3.2")
     implementation("com.thedeanda:lorem:2.2")
