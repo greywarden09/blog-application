@@ -1,8 +1,10 @@
 plugins {
     id("java")
+    id("scala")
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
     id("io.freefair.lombok") version "8.6"
+    id("io.gatling.gradle") version "3.10.5"
 }
 
 repositories {
@@ -15,7 +17,16 @@ tasks.wrapper {
 }
 
 tasks.test {
-    useJUnit()
+    useJUnitPlatform()
+}
+
+gatling {
+    includeMainOutput = true
+    includeTestOutput = true
+}
+
+configurations.gatlingImplementation {
+    extendsFrom(configurations.implementation.get())
 }
 
 dependencies {
@@ -38,8 +49,10 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+    implementation("org.scala-lang:scala3-library_3:3.4.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core:5.11.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
     testImplementation("org.hamcrest:hamcrest:2.2")

@@ -19,7 +19,9 @@ public abstract class BlogEntryMapper {
 
     @Mappings({
             @Mapping(source = "content", target = "content"),
-            @Mapping(source = "createBlogEntryRequest", target = "author", qualifiedByName = "author")
+            @Mapping(source = "createBlogEntryRequest", target = "author", qualifiedByName = "author"),
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "publicationDate", ignore = true)
     })
     public abstract BlogEntry toEntity(CreateBlogEntryRequest createBlogEntryRequest);
 
